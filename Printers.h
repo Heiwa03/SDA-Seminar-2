@@ -1,6 +1,8 @@
 #ifndef PRINTERS_H
 #define PRINTERS_H
 
+#define MAX_DOC_TITLE_LENGTH 20
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -62,4 +64,6 @@ PrinterList* create_random_printer_list(int num_printers);
 // DEBUG: Printer specific functions
 void show_printer_list(PrinterList *printer_list);
 
+// Helper document functions
+char* _generate_random_string(int length);
 #endif // PRINTERS_H

@@ -59,14 +59,21 @@ DocumentQueue* create_random_document_queue(int max_docs, int max_lines) {
         // Generate a random number of lines for each document
         int num_lines = rand() % (max_lines + 1);
 
+        // Generate a random title
+        char* doc_title = generate_random_string(MAX_DOC_TITLE_LENGTH);
+
         // Create a new document
-        Document* doc = create_document(i + 1, "Random Document", num_lines);
+        Document* doc = create_document(i + 1, doc_title, num_lines);
         if (doc == NULL) {
+            free(doc_title);
             return NULL;
         }
 
         // Add the document to the queue
         add_document(doc_queue, doc);
+
+        // Free the title string
+        free(doc_title);
     }
 
     return doc_queue;
@@ -222,3 +229,16 @@ void show_printer_list(PrinterList *printer_list) {
 
 
 // Helper Document functions
+char* _generate_random_string(int length) {
+    char* string = malloc((length + 1) * sizeof(char));
+    char letters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    if (string) {
+        for (int i = 0; i < length; ++i) {
+            string[i] = letters[rand() % (sizeof(letters) - 1)];
+        }
+        string[length] = '\0';
+    }
+
+    return string;
+}
