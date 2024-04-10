@@ -161,6 +161,63 @@ void add_printer(PrinterList *printer_list, Printer *printer) {
     }
 }
 
+PrinterList* create_random_printer_list(int max_printers) {
+    // Create a new printer list
+    PrinterList* printer_list = create_printer_list();
+    if (printer_list == NULL) {
+        return NULL;
+    }
+
+    // Generate a random number of printers
+    int num_printers = rand() % (max_printers + 1);
+    for (int i = 0; i < num_printers; i++) {
+        // Create a new printer
+        struct tm printer_line_print_time;
+        time_t t = time(NULL);
+        printer_line_print_time = *localtime(&t);
+
+        Printer* printer = create_printer(i + 1, printer_line_print_time);
+        if (printer == NULL) {
+            return NULL;
+        }
+
+        // Add the printer to the list
+        add_printer(printer_list, printer);
+    }
+
+    return printer_list;
+}
+
+void show_printer_list(PrinterList *printer_list) {
+    // Check if the printer list is empty
+    if (printer_list->head == NULL) {
+        printf("Printer list is empty.\n");
+        return;
+    }
+
+    // Print the details of each printer in the list
+    Printer *current_printer = printer_list->head;
+    while (current_printer != NULL) {
+        printf("Printer ID: %d\n", current_printer->printer_id);
+        printf("Printer Line Print Time: %s", asctime(&(current_printer->printer_line_print_time)));
+        printf("Printer Status: ");
+        switch (current_printer->printer_status) {
+            case PRINTER_STATUS_BUSY:
+                printf("Busy\n");
+                break;
+            case PRINTER_STATUS_FREE:
+                printf("Free\n");
+                break;
+            case PRINTER_STATUS_OFFLINE:
+                printf("Offline\n");
+                break;
+        }
+        printf("\n");
+
+        current_printer = current_printer->next_printer;
+    }
+}
+
 // Helper Printers functions
 
 

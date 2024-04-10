@@ -6,7 +6,7 @@
             "command": "/usr/lib64/ccache/gcc",
             "args": [
                 "-fdiagnostics-color=always",
-                "Printer.c",
+                "Printers.c",
                 "-g",
                 "${file}",
                 "-o",

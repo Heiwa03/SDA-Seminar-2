@@ -6,6 +6,8 @@
 #include <math.h>
 #include <time.h>
 
+typedef struct tm tm;
+
 enum PrinterStatus {
     PRINTER_STATUS_BUSY,
     PRINTER_STATUS_FREE,
@@ -17,7 +19,7 @@ typedef struct Document {
     char *doc_title;
     int doc_num_lines;
     int doc_num_lines_to_print;
-    Document *next_doc;
+    struct Document *next_doc;
 } Document;
 
 typedef struct DocumentQueue {
@@ -31,7 +33,7 @@ typedef struct Printer {
     int printer_id;
     tm printer_line_print_time;
     Document *printer_current_doc;
-    Printer *next_printer;
+    struct Printer *next_printer;
     enum PrinterStatus printer_status;
     
 } Printer;
@@ -56,5 +58,8 @@ void show_document_queue(DocumentQueue *doc_queue);
 PrinterList *create_printer_list();
 Printer *create_printer(int printer_id, tm printer_line_print_time);
 void add_printer(PrinterList *printer_list, Printer *printer);
+PrinterList* create_random_printer_list(int num_printers);
+// DEBUG: Printer specific functions
+void show_printer_list(PrinterList *printer_list);
 
 #endif // PRINTERS_H
