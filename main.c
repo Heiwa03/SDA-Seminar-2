@@ -30,7 +30,5 @@ int main () {
     // Show the printer list
     show_printer_list(printer_list);
 
-
-
     return 0;
 }

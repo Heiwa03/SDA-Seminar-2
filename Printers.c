@@ -10,13 +10,26 @@ DocumentQueue *create_document_queue() {
     return doc_queue;
 }
 
-Document *create_document(int doc_id, char *doc_title, int doc_num_lines) {
-    Document *doc = (Document *)malloc(sizeof(Document));
+Document* create_document(int doc_id, char* doc_title, int doc_num_lines) {
+    Document* doc = (Document*) malloc(sizeof(Document));
+
+    if (doc == NULL) {
+        printf("Memory allocation failed.\n");
+        return NULL;
+    }
+
     doc->doc_id = doc_id;
-    doc->doc_title = doc_title;
+
+    // Copy the doc_title string by value
+    doc->doc_title = malloc(strlen(doc_title) + 1);
+    if (doc->doc_title != NULL) {
+        strcpy(doc->doc_title, doc_title);
+    }
+
     doc->doc_num_lines = doc_num_lines;
     doc->doc_num_lines_to_print = doc_num_lines;
     doc->next_doc = NULL;
+
     return doc;
 }
 
@@ -60,7 +73,7 @@ DocumentQueue* create_random_document_queue(int max_docs, int max_lines) {
         int num_lines = rand() % (max_lines + 1);
 
         // Generate a random title
-        char* doc_title = generate_random_string(MAX_DOC_TITLE_LENGTH);
+        char* doc_title = _generate_random_string(MAX_DOC_TITLE_LENGTH);
 
         // Create a new document
         Document* doc = create_document(i + 1, doc_title, num_lines);
