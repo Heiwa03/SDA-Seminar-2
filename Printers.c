@@ -72,6 +72,26 @@ DocumentQueue* create_random_document_queue(int max_docs, int max_lines) {
     return doc_queue;
 }
 
+void show_document_queue(DocumentQueue *doc_queue) {
+    // Check if the document queue is empty
+    if (doc_queue->head == NULL) {
+        printf("Document queue is empty.\n");
+        return;
+    }
+
+    // Print the details of each document in the queue
+    Document *current_doc = doc_queue->head;
+    while (current_doc != NULL) {
+        printf("Document ID: %d\n", current_doc->doc_id);
+        printf("Document Title: %s\n", current_doc->doc_title);
+        printf("Number of Lines: %d\n", current_doc->doc_num_lines);
+        printf("Number of Lines to Print: %d\n", current_doc->doc_num_lines_to_print);
+        printf("\n");
+
+        current_doc = current_doc->next_doc;
+    }
+}
+
 // Printer specific functions
 PrinterList* create_printer_list() {
     PrinterList* printer_list = (PrinterList*) malloc(sizeof(PrinterList));
