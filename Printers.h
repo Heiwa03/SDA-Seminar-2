@@ -6,5 +6,17 @@
 #include <math.h>
 #include <time.h>
 
+typedef struct Document {
+    int doc_id;
+    char *doc_title;
+    int doc_num_lines;
+    int doc_num_lines_to_print;
+    Document *next_doc;
+} Document;
+
+typedef struct Printer {
+
+} Printer;
+
 
 #endif // PRINTERS_H
