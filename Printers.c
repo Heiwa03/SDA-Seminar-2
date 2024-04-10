@@ -67,10 +67,10 @@ DocumentQueue* create_random_document_queue(int max_docs, int max_lines) {
     }
 
     // Generate a random number of documents
-    int num_docs = rand() % (max_docs + 1);
+    int num_docs = (1 + rand()) % (max_docs + 1);
     for (int i = 0; i < num_docs; i++) {
         // Generate a random number of lines for each document
-        int num_lines = rand() % (max_lines + 1);
+        int num_lines = (1 + rand()) % (max_lines + 1);
 
         // Generate a random title
         char* doc_title = _generate_random_string(MAX_DOC_TITLE_LENGTH);
@@ -109,6 +109,25 @@ void show_document_queue(DocumentQueue *doc_queue) {
         printf("\n");
 
         current_doc = current_doc->next_doc;
+    }
+}
+
+void free_document_queue(DocumentQueue *doc_queue) {
+    // Check if the document queue is not NULL
+    if (doc_queue != NULL) {
+        // Free each document in the queue
+        Document *current_doc = doc_queue->head;
+        while (current_doc != NULL) {
+            Document *next_doc = current_doc->next_doc;
+            // Free the document title
+            free(current_doc->doc_title);
+            // Free the document itself
+            free(current_doc);
+            current_doc = next_doc;
+        }
+
+        // Free the document queue itself
+        free(doc_queue);
     }
 }
 
@@ -189,7 +208,7 @@ PrinterList* create_random_printer_list(int max_printers) {
     }
 
     // Generate a random number of printers
-    int num_printers = rand() % (max_printers + 1);
+    int num_printers = (1 + rand()) % (max_printers + 1);
     for (int i = 0; i < num_printers; i++) {
         // Create a new printer
         struct tm printer_line_print_time;
@@ -235,6 +254,28 @@ void show_printer_list(PrinterList *printer_list) {
         printf("\n");
 
         current_printer = current_printer->next_printer;
+    }
+}
+
+void free_printer_list(PrinterList *printer_list) {
+    // Check if the printer list is not NULL
+    if (printer_list != NULL) {
+        // Free each printer in the list
+        Printer *current_printer = printer_list->head;
+        while (current_printer != NULL) {
+            Printer *next_printer = current_printer->next_printer;
+            // Free the current document in the printer
+            if (current_printer->printer_current_doc != NULL) {
+                free(current_printer->printer_current_doc->doc_title);
+                free(current_printer->printer_current_doc);
+            }
+            // Free the printer itself
+            free(current_printer);
+            current_printer = next_printer;
+        }
+
+        // Free the printer list itself
+        free(printer_list);
     }
 }
 

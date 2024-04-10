@@ -54,6 +54,7 @@ DocumentQueue *create_document_queue();
 Document *create_document(int doc_id, char *doc_title, int doc_num_lines);
 void add_document(DocumentQueue *doc_queue, Document *doc);
 DocumentQueue* create_random_document_queue(int max_docs, int max_lines);
+void free_document_queue(DocumentQueue *doc_queue);
 // DEBUG: Document specific functions
 void show_document_queue(DocumentQueue *doc_queue);
 
@@ -62,6 +63,7 @@ PrinterList *create_printer_list();
 Printer *create_printer(int printer_id, tm printer_line_print_time);
 void add_printer(PrinterList *printer_list, Printer *printer);
 PrinterList* create_random_printer_list(int num_printers);
+void free_printer_list(PrinterList *printer_list);
 // DEBUG: Printer specific functions
 void show_printer_list(PrinterList *printer_list);
 
