@@ -8,6 +8,7 @@
 #include <math.h>
 #include <time.h>
 #include <string.h>
+#include <pthread.h>
 
 typedef struct tm tm;
 
@@ -38,6 +39,7 @@ typedef struct Printer {
     Document *printer_current_doc;
     struct Printer *next_printer;
     enum PrinterStatus printer_status;
+    pthread_mutex_t printer_mutex;  // Mutex for this printer
     
 } Printer;
 

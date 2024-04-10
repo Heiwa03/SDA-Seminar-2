@@ -3,17 +3,21 @@
 #include <math.h>
 #include <time.h>
 #include <unistd.h>
+#include <pthread.h>
 #include "Printers.h"
 
 #define MAX_DOCS 10
 #define MAX_LINES 100
 
+DocumentQueue *doc_queue;
+
 void simulate_printing(PrinterList* printer_list, DocumentQueue* doc_queue);
+void* printer_thread(void* arg);
 
 int main () {
     srand(time(NULL));
 
-    DocumentQueue *doc_queue = create_random_document_queue(MAX_DOCS, MAX_LINES);
+    doc_queue = create_random_document_queue(MAX_DOCS, MAX_LINES);
     if (doc_queue == NULL) {
         printf("Error: Could not create the document queue\n");
         return 1;
@@ -37,12 +41,62 @@ int main () {
     return 0;
 }
 
+// Function for each printer thread
+void* printer_thread(void* arg) {
+    Printer* printer = (Printer*)arg;
+
+    while (1) {
+        pthread_mutex_lock(&printer->printer_mutex);
+
+        // If the printer has a document, print it
+        if (printer->printer_current_doc != NULL) {
+            printer->printer_current_doc->doc_num_lines_to_print--;
+            printf("Printer %d is printing document %d (%d lines left)\n",
+                   printer->printer_id,
+                   printer->printer_current_doc->doc_id,
+                   printer->printer_current_doc->doc_num_lines_to_print);
+
+            // If the document is fully printed, set the printer status to free
+            if (printer->printer_current_doc->doc_num_lines_to_print == 0) {
+                printer->printer_status = PRINTER_STATUS_FREE;
+                free(printer->printer_current_doc);
+                printer->printer_current_doc = NULL;
+            }
+        }
+
+        pthread_mutex_unlock(&printer->printer_mutex);
+
+        // If there are no more documents and the printer is free, exit the loop
+        if (doc_queue->num_docs == 0 && printer->printer_status == PRINTER_STATUS_FREE) {
+            break;
+        }
+
+        // Sleep for a second to simulate real-time printing
+        usleep(500*1000);
+    }
+
+    return NULL;
+}
+
 void simulate_printing(PrinterList* printer_list, DocumentQueue* doc_queue) {
-    int printing_in_progress = 0;
-    do {
+    // Create a thread for each printer
+    Printer* current_printer = printer_list->head;
+    pthread_t* printer_threads = malloc(sizeof(pthread_t) * printer_list->num_printers);
+    int i = 0;
+
+    while (current_printer != NULL) {
+        pthread_create(&printer_threads[i], NULL, printer_thread, current_printer);
+        current_printer = current_printer->next_printer;
+        i++;
+    }
+
+    // While there are still documents in the queue
+    while (doc_queue->num_docs > 0) {
         // Assign documents to printers
-        Printer* current_printer = printer_list->head;
+        current_printer = printer_list->head;
         while (current_printer != NULL && doc_queue->head != NULL) {
+            pthread_mutex_lock(&current_printer->printer_mutex);
+
             if (current_printer->printer_status == PRINTER_STATUS_FREE) {
                 // Assign the first document in the queue to the printer
                 current_printer->printer_current_doc = doc_queue->head;
@@ -53,32 +107,15 @@ void simulate_printing(PrinterList* printer_list, DocumentQueue* doc_queue) {
                 current_printer->printer_status = PRINTER_STATUS_BUSY;
             }
 
+            pthread_mutex_unlock(&current_printer->printer_mutex);
             current_printer = current_printer->next_printer;
         }
+    }
 
-        // Simulate the printing process
-        printing_in_progress = 0;
-        current_printer = printer_list->head;
-        while (current_printer != NULL) {
-            if (current_printer->printer_status == PRINTER_STATUS_BUSY) {
-                // Print one line of the document
-                current_printer->printer_current_doc->doc_num_lines_to_print--;
-                printf("Printer %d is printing document %d (%d lines left)\n",
-                       current_printer->printer_id,
-                       current_printer->printer_current_doc->doc_id,
-                       current_printer->printer_current_doc->doc_num_lines_to_print);
-                usleep(30000); // Simulate the time it takes to print a line
-                // If the document is fully printed, set the printer status to free
-                if (current_printer->printer_current_doc->doc_num_lines_to_print == 0) {
-                    current_printer->printer_status = PRINTER_STATUS_FREE;
-                    free(current_printer->printer_current_doc);
-                    current_printer->printer_current_doc = NULL;
-                } else {
-                    printing_in_progress = 1;
-                }
-            }
+    // Wait for all printer threads to finish
+    for (i = 0; i < printer_list->num_printers; i++) {
+        pthread_join(printer_threads[i], NULL);
+    }
 
-            current_printer = current_printer->next_printer;
-        }
-    } while (doc_queue->num_docs > 0 || printing_in_progress);
+    free(printer_threads);
 }

@@ -164,6 +164,7 @@ Printer* create_printer(int printer_id, struct tm printer_line_print_time) {
     printer->printer_current_doc = NULL;
     printer->next_printer = NULL;
     printer->printer_status = PRINTER_STATUS_FREE;
+    pthread_mutex_init(&printer->printer_mutex, NULL);
 
     return printer;
 }
@@ -270,6 +271,7 @@ void free_printer_list(PrinterList *printer_list) {
                 free(current_printer->printer_current_doc);
             }
             // Free the printer itself
+            pthread_mutex_destroy(&current_printer->printer_mutex);  // Destroy the mutex
             free(current_printer);
             current_printer = next_printer;
         }
