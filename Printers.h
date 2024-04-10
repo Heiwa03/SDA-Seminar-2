@@ -15,7 +15,10 @@ typedef struct Document {
 } Document;
 
 typedef struct Printer {
-
+    int printer_id;
+    tm printer_line_print_time;
+    Document *printer_current_doc;
+    Printer *next_printer;
 } Printer;
 
 
