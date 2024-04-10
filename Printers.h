@@ -48,6 +48,7 @@ typedef struct PrinterList {
 DocumentQueue *create_document_queue();
 Document *create_document(int doc_id, char *doc_title, int doc_num_lines);
 void add_document(DocumentQueue *doc_queue, Document *doc);
+DocumentQueue* create_random_document_queue(int max_docs, int max_lines);
 
 // Printer specific functions
 PrinterList *create_printer_list();

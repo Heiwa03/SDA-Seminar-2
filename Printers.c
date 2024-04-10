@@ -46,8 +46,100 @@ void add_document(DocumentQueue *doc_queue, Document *doc) {
     doc_queue->num_docs_not_printed++;
 }
 
-// Printer specific functions
+DocumentQueue* create_random_document_queue(int max_docs, int max_lines) {
+    // Create a new document queue
+    DocumentQueue* doc_queue = create_document_queue();
+    if (doc_queue == NULL) {
+        return NULL;
+    }
 
+    // Generate a random number of documents
+    int num_docs = rand() % (max_docs + 1);
+    for (int i = 0; i < num_docs; i++) {
+        // Generate a random number of lines for each document
+        int num_lines = rand() % (max_lines + 1);
+
+        // Create a new document
+        Document* doc = create_document(i + 1, "Random Document", num_lines);
+        if (doc == NULL) {
+            return NULL;
+        }
+
+        // Add the document to the queue
+        add_document(doc_queue, doc);
+    }
+
+    return doc_queue;
+}
+
+// Printer specific functions
+PrinterList* create_printer_list() {
+    PrinterList* printer_list = (PrinterList*) malloc(sizeof(PrinterList));
+    if (printer_list == NULL) {
+        printf("Memory allocation failed.\n");
+        return NULL;
+    }
+
+    printer_list->head = NULL;
+    printer_list->num_printers = 0;
+    printer_list->num_printers_busy = 0;
+    printer_list->num_printers_free = 0;
+    printer_list->num_printers_offline = 0;
+
+    return printer_list;
+}
+
+Printer* create_printer(int printer_id, struct tm printer_line_print_time) {
+    // Allocate memory for the new Printer
+    Printer* printer = (Printer*) malloc(sizeof(Printer));
+
+    // Check if the memory allocation was successful
+    if (printer == NULL) {
+        printf("Memory allocation failed.\n");
+        return NULL;
+    }
+
+    // Initialize the values
+    printer->printer_id = printer_id;
+    printer->printer_line_print_time = printer_line_print_time;
+    printer->printer_current_doc = NULL;
+    printer->next_printer = NULL;
+    printer->printer_status = PRINTER_STATUS_FREE;
+
+    return printer;
+}
+
+void add_printer(PrinterList *printer_list, Printer *printer) {
+    // Check if the printer list is empty
+    if (printer_list->head == NULL) {
+        printer_list->head = printer;
+    } else {
+        // Find the last printer in the list
+        Printer *current_printer = printer_list->head;
+        while (current_printer->next_printer != NULL) {
+            current_printer = current_printer->next_printer;
+        }
+
+        // Add the new printer to the end of the list
+        current_printer->next_printer = printer;
+    }
+
+    // Increment the number of printers in the list
+    printer_list->num_printers++;
+
+    // Update the printer status counts
+    switch (printer->printer_status) {
+        case PRINTER_STATUS_BUSY:
+            printer_list->num_printers_busy++;
+            break;
+        case PRINTER_STATUS_FREE:
+            printer_list->num_printers_free++;
+            break;
+        case PRINTER_STATUS_OFFLINE:
+            printer_list->num_printers_offline++;
+            break;
+    }
+}
 
 // Helper Printers functions
 
