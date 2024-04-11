@@ -35,7 +35,8 @@ typedef struct DocumentQueue {
 
 typedef struct Printer {
     int printer_id;
-    tm printer_line_print_time;
+    //tm printer_line_print_time;
+    unsigned int printer_line_print_time; // in lines per second
     Document *printer_current_doc;
     struct Printer *next_printer;
     enum PrinterStatus printer_status;
@@ -62,7 +63,8 @@ void show_document_queue(DocumentQueue *doc_queue);
 
 // Printer specific functions
 PrinterList *create_printer_list();
-Printer *create_printer(int printer_id, tm printer_line_print_time);
+//Printer *create_printer(int printer_id, tm printer_line_print_time);
+Printer *create_printer(int printer_id, unsigned int printer_line_print_time);
 void add_printer(PrinterList *printer_list, Printer *printer);
 PrinterList* create_random_printer_list(int num_printers);
 void free_printer_list(PrinterList *printer_list);
