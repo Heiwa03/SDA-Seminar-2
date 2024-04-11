@@ -8,6 +8,7 @@
 
 #define MAX_DOCS 10
 #define MAX_LINES 100
+#define SIMULATION_SLEEP_TIME 500
 
 DocumentQueue *doc_queue;
 
@@ -72,7 +73,7 @@ void* printer_thread(void* arg) {
         }
 
         // Sleep for a second to simulate real-time printing
-        usleep(500*1000);
+        usleep(SIMULATION_SLEEP_TIME*1000);
     }
 
     return NULL;
