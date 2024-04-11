@@ -20,7 +20,7 @@ Document* create_document(int doc_id, char* doc_title, int doc_num_lines) {
 
     doc->doc_id = doc_id;
 
-    // Copy the doc_title string by value
+    // FIX: Copy by value for doc_title otherwise we lose it after generation
     doc->doc_title = malloc(strlen(doc_title) + 1);
     if (doc->doc_title != NULL) {
         strcpy(doc->doc_title, doc_title);
@@ -34,55 +34,54 @@ Document* create_document(int doc_id, char* doc_title, int doc_num_lines) {
 }
 
 void add_document(DocumentQueue *doc_queue, Document *doc) {
-    // Check if the document queue is empty
+    // Check if the doc queue is empty
     if (doc_queue->head == NULL) {
         doc_queue->head = doc;
         doc->doc_id = 1; // Start the id from 1
     } else {
-        // Find the last document in the queue
+        // Find the last doc in the queue
         Document *current_doc = doc_queue->head;
         while (current_doc->next_doc != NULL) {
             current_doc = current_doc->next_doc;
         }
 
-        // Check if the document id is unique and increment it from the last id
+        // Check if the doc id is unique and increment it from the last id
         if (doc->doc_id <= current_doc->doc_id) {
             doc->doc_id = current_doc->doc_id + 1;
         }
 
-        // Add the new document to the end of the queue
+        // Add the new doc to the end of the queue
         current_doc->next_doc = doc;
     }
 
-    // Increment the number of documents in the queue
+    // Increment number of docs in the queue
     doc_queue->num_docs++;
     doc_queue->num_docs_not_printed++;
 }
 
 DocumentQueue* create_random_document_queue(int max_docs, int max_lines) {
-    // Create a new document queue
+    // Create a new doc queue
     DocumentQueue* doc_queue = create_document_queue();
     if (doc_queue == NULL) {
         return NULL;
     }
 
-    // Generate a random number of documents
+    // Random gen of docs
     int num_docs = (1 + rand()) % (max_docs + 1);
     for (int i = 0; i < num_docs; i++) {
-        // Generate a random number of lines for each document
+        // Random gen of lines
         int num_lines = (1 + rand()) % (max_lines + 1);
 
-        // Generate a random title
+        // Random get of titles
         char* doc_title = _generate_random_string(MAX_DOC_TITLE_LENGTH);
 
-        // Create a new document
         Document* doc = create_document(i + 1, doc_title, num_lines);
         if (doc == NULL) {
             free(doc_title);
             return NULL;
         }
 
-        // Add the document to the queue
+        // Add the doc to the queue
         add_document(doc_queue, doc);
 
         // Free the title string
@@ -93,13 +92,11 @@ DocumentQueue* create_random_document_queue(int max_docs, int max_lines) {
 }
 
 void show_document_queue(DocumentQueue *doc_queue) {
-    // Check if the document queue is empty
     if (doc_queue->head == NULL) {
         printf("Document queue is empty.\n");
         return;
     }
 
-    // Print the details of each document in the queue
     Document *current_doc = doc_queue->head;
     while (current_doc != NULL) {
         printf("Document ID: %d\n", current_doc->doc_id);
@@ -113,20 +110,19 @@ void show_document_queue(DocumentQueue *doc_queue) {
 }
 
 void free_document_queue(DocumentQueue *doc_queue) {
-    // Check if the document queue is not NULL
     if (doc_queue != NULL) {
-        // Free each document in the queue
+        // Free each doc in queue
         Document *current_doc = doc_queue->head;
         while (current_doc != NULL) {
             Document *next_doc = current_doc->next_doc;
-            // Free the document title
+            // Free the doc title (Otherwise MEMORY LEAAAAAAKS)
             free(current_doc->doc_title);
-            // Free the document itself
+            // Free the doc
             free(current_doc);
             current_doc = next_doc;
         }
 
-        // Free the document queue itself
+        // Free the doc queue
         free(doc_queue);
     }
 }
@@ -171,16 +167,14 @@ Printer* create_printer(int printer_id, struct tm printer_line_print_time) {
 }*/
 
 Printer *create_printer(int printer_id, unsigned int printer_line_print_time) {
-    // Allocate memory for the new Printer
+    // Allocate memory for new Printer
     Printer* printer = (Printer*) malloc(sizeof(Printer));
 
-    // Check if the memory allocation was successful
     if (printer == NULL) {
-        printf("Memory allocation failed.\n");
+        printf("Memory allocation failed.\n"); // It's most likely that malloc might fuck up at this step but,.... oh well...
         return NULL;
     }
 
-    // Initialize the values
     printer->printer_id = printer_id;
     printer->printer_line_print_time = printer_line_print_time;
     printer->printer_current_doc = NULL;
@@ -192,24 +186,23 @@ Printer *create_printer(int printer_id, unsigned int printer_line_print_time) {
 }
 
 void add_printer(PrinterList *printer_list, Printer *printer) {
-    // Check if the printer list is empty
     if (printer_list->head == NULL) {
         printer_list->head = printer;
     } else {
-        // Find the last printer in the list
+        // Find last printer in list
         Printer *current_printer = printer_list->head;
         while (current_printer->next_printer != NULL) {
             current_printer = current_printer->next_printer;
         }
 
-        // Add the new printer to the end of the list
+        // Add new printer to end of list
         current_printer->next_printer = printer;
     }
 
-    // Increment the number of printers in the list
+    // Increment the number of printers in list
     printer_list->num_printers++;
 
-    // Update the printer status counts
+    // Update the printer status counts (it's supposed to only be free at this point as offline is only in case of breakage)
     switch (printer->printer_status) {
         case PRINTER_STATUS_BUSY:
             printer_list->num_printers_busy++;
@@ -218,7 +211,7 @@ void add_printer(PrinterList *printer_list, Printer *printer) {
             printer_list->num_printers_free++;
             break;
         case PRINTER_STATUS_OFFLINE:
-            printer_list->num_printers_offline++;
+            printer_list->num_printers_offline++; //SHOW ONLY HAPPEN IF THE PRINTER IS BROKEN NOT AT INITIALIZATION
             break;
     }
 }
@@ -251,16 +244,16 @@ PrinterList* create_random_printer_list(int max_printers) {
 }*/
 
 PrinterList* create_random_printer_list(int max_printers) {
-    // Create a new printer list
+    // Create new printer list
     PrinterList* printer_list = create_printer_list();
     if (printer_list == NULL) {
         return NULL;
     }
 
-    // Generate a random number of printers
+    // Random get of printers
     int num_printers = (1 + rand()) % (max_printers + 1);
     for (int i = 0; i < num_printers; i++) {
-        // Create a new printer
+        // Random gen of printer line print time
         int printer_line_print_time;
         printer_line_print_time = rand() % 10;
 
@@ -269,7 +262,6 @@ PrinterList* create_random_printer_list(int max_printers) {
             return NULL;
         }
 
-        // Add the printer to the list
         add_printer(printer_list, printer);
     }
 
@@ -308,13 +300,11 @@ void show_printer_list(PrinterList *printer_list) {
 }*/
 
 void show_printer_list(PrinterList *printer_list) {
-    // Check if the printer list is empty
     if (printer_list->head == NULL) {
         printf("Printer list is empty.\n");
         return;
     }
 
-    // Print the details of each printer in the list
     Printer *current_printer = printer_list->head;
     while (current_printer != NULL) {
         printf("Printer ID: %d\n", current_printer->printer_id);
@@ -338,7 +328,6 @@ void show_printer_list(PrinterList *printer_list) {
 }
 
 void free_printer_list(PrinterList *printer_list) {
-    // Check if the printer list is not NULL
     if (printer_list != NULL) {
         // Free each printer in the list
         Printer *current_printer = printer_list->head;
@@ -355,7 +344,6 @@ void free_printer_list(PrinterList *printer_list) {
             current_printer = next_printer;
         }
 
-        // Free the printer list itself
         free(printer_list);
     }
 }
