@@ -73,12 +73,14 @@ void run_simulation(Simulation *sim) {
         fprintf(stderr, "Error: Simulation is NULL\n");
         return;
     }
-    clock_gettime(CLOCK_REALTIME, &start);
+    
     pthread_mutex_init(&sim->mutex, NULL);
 
     Printer* printer = sim->printer_list->head;
     pthread_t* printer_threads = malloc(sizeof(pthread_t) * sim->printer_list->num_printers);
     int i = 0;
+
+    time_t start_time = time(NULL);
 
     while (printer != NULL) {
         PrinterThreadArg* arg = malloc(sizeof(PrinterThreadArg));
@@ -93,12 +95,12 @@ void run_simulation(Simulation *sim) {
         pthread_join(printer_threads[i], NULL);
     }
     
+     
 
     free(printer_threads);
     pthread_mutex_destroy(&sim->mutex);
-    clock_gettime(CLOCK_REALTIME, &finish);
-    real_time = (finish.tv_sec - start.tv_sec);
-    real_time += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    time_t end_time = time(NULL);
+    real_time = difftime(end_time, start_time);
     //real_time *= 1000;
     sim->real_time_elapsed = real_time;
     _print_simulation_results(sim);
