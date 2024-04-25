@@ -122,12 +122,12 @@ PrinterList* create_random_printer_list(int max_printers) {
         return NULL;
     }
 
-    // Random get of printers
+    // Random gen of printers
     int num_printers = (1 + rand()) % (max_printers + 1);
     for (int i = 0; i < num_printers; i++) {
         // Random gen of printer line print time
         int printer_line_print_time;
-        printer_line_print_time = rand() % 10;
+        printer_line_print_time = rand() % 20;
 
         Printer* printer = create_printer(i + 1, printer_line_print_time);
         if (printer == NULL) {

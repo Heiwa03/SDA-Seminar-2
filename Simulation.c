@@ -6,9 +6,8 @@ Simulation *create_simulation(int num_printers, int max_docs, int max_lines, int
         fprintf(stderr, "Error: Unable to allocate memory for simulation\n");
         exit(1);
     }
-    
     sim->printer_list = create_random_printer_list(num_printers);
-    sim->doc_queue = create_random_document_queue(max_docs, max_lines, max_title_length);
+    sim->doc_queue = create_random_document_queue(max_docs, max_lines, max_title_length);   
     
     return sim;
 }
@@ -21,6 +20,19 @@ void free_simulation(Simulation *sim) {
     free_printer_list(sim->printer_list);
     free_document_queue(sim->doc_queue);
     free(sim);
+}
+
+void show_short_simulation_setup(Simulation *sim) {
+    if (sim == NULL) {
+        fprintf(stderr, "Error: Simulation is NULL\n");
+        return;
+    }
+
+    printf("\nGenerated simulation Setup:\n");
+    printf("====================================\n");
+    printf("Number of printers: %d\n", sim->printer_list->num_printers);
+    printf("Number of documents: %d\n", sim->doc_queue->num_docs);
+    printf("====================================\n");
 }
 
 void* printer_thread(void* arg) {
@@ -40,7 +52,7 @@ void* printer_thread(void* arg) {
         pthread_mutex_unlock(&sim->mutex);
 
         float time_elapsed = print_document(printer, doc);
-        printf("Time elapsed for document: %f\n", time_elapsed);  // Debugging print statement
+        printf("DEBUG: Printer %d : Time elapsed for document %d: %.3f\n", printer->printer_id, doc->doc_id, time_elapsed);  // Debugging print statement
         if (time_elapsed != -1) {
             pthread_mutex_lock(&sim->mutex);
             sim->total_num_docs_printed++;
@@ -83,6 +95,19 @@ void run_simulation(Simulation *sim) {
     free(printer_threads);
     pthread_mutex_destroy(&sim->mutex);
 
+    _print_simulation_results(sim);
+}
+
+void _print_simulation_results(Simulation *sim) {
+    if (sim == NULL) {
+        fprintf(stderr, "Error: Simulation is NULL\n");
+        return;
+    }
+
+    printf("\nSimulation Results:\n");
+    printf("====================================\n");
+    printf("Total number of printers: %d\n", sim->printer_list->num_printers);
     printf("Total number of documents printed: %d\n", sim->total_num_docs_printed);
-    printf("Total time elapsed: %f seconds\n", sim->total_time_elapsed);
+    printf("Total time elapsed: %.3f seconds\n", sim->total_time_elapsed);
+    printf("====================================\n");
 }

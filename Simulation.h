@@ -25,5 +25,7 @@ typedef struct PrinterThreadArg {
 Simulation* create_simulation(int num_printers, int max_docs, int max_lines, int max_title_length);
 void free_simulation(Simulation *sim);
 void run_simulation(Simulation *sim);
+void show_short_simulation_setup(Simulation *sim);
 
+void _print_simulation_results(Simulation *sim);
 #endif // SIMULATION_H
