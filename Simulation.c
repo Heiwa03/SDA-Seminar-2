@@ -49,6 +49,7 @@ void* printer_thread(void* arg) {
         }
 
         Document* doc = dequeue_document(sim->doc_queue);
+        //Document* doc = dequeue_document_front(sim->doc_queue);
         pthread_mutex_unlock(&sim->mutex);
 
         float time_elapsed = print_document(printer, doc);
@@ -59,8 +60,6 @@ void* printer_thread(void* arg) {
             sim->total_time_elapsed += time_elapsed;
             pthread_mutex_unlock(&sim->mutex);
         }
-
-        free(doc);
     }
 
     free(printer_arg);

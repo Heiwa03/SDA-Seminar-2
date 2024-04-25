@@ -156,3 +156,31 @@ Document* dequeue_document(DocumentQueue *doc_queue) {
 
     return doc;
 }
+
+Document *dequeue_document_front(DocumentQueue *doc_queue) {
+    if (doc_queue->head == NULL) {
+        return NULL;
+    }
+    Document *chosen_doc = NULL;
+
+    Document *prev_doc = doc_queue->head;
+    if (prev_doc->next_doc == NULL) {
+        chosen_doc = prev_doc;
+        doc_queue->num_docs_printed++;
+        return chosen_doc;
+    }
+    Document *doc = doc_queue->head->next_doc;
+    if (doc->next_doc == NULL) {
+        chosen_doc = doc;
+        doc_queue->num_docs_printed++;
+        return chosen_doc;
+    }
+    
+    while (doc->next_doc != NULL) {
+        prev_doc = prev_doc->next_doc;
+        doc = doc->next_doc;
+        chosen_doc = doc;
+    }
+
+    return chosen_doc;
+}

@@ -8,11 +8,15 @@
 
 int main () {
     srand(time(NULL));
+    int num_printer, max_docs, max_lines;
+    printf("num_printer, max_docs, max_lines: ");
+    scanf("%d %d %d", &num_printer, &max_docs, &max_lines);
+    getchar();
     char user_choice = 'n';
     Simulation *sim = NULL;
 
     do {
-        sim = create_simulation(5, 10, 1000, MAX_DOC_TITLE_LENGTH);
+        sim = create_simulation(10, 100, 1000, MAX_DOC_TITLE_LENGTH);
 
         if (sim == NULL) {
             fprintf(stderr, "Error: Unable to create simulation\n");
