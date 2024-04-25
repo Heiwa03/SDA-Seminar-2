@@ -14,6 +14,7 @@ typedef struct Simulation {
     int total_num_docs_printed;
     float total_time_elapsed;
     double real_time_elapsed;
+    int done;
     pthread_mutex_t mutex;  // Add this line
 } Simulation;
 

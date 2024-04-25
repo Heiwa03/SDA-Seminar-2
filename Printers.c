@@ -226,8 +226,8 @@ float print_document(Printer *printer, Document *doc) {
     }
 
     // Print the document
-    printer->printer_current_doc = doc;
     printer->printer_status = PRINTER_STATUS_BUSY;
+    printer->printer_current_doc = doc;
     printer->printer_current_doc->doc_num_lines_to_print = printer->printer_current_doc->doc_num_lines;
 
     float time_for_print = (float)printer->printer_current_doc->doc_num_lines_to_print / (float)printer->printer_line_print_time;
