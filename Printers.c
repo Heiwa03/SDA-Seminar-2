@@ -206,10 +206,10 @@ void free_printer_list(PrinterList *printer_list) {
         while (current_printer != NULL) {
             Printer *next_printer = current_printer->next_printer;
             // Free the current document in the printer
-            if (current_printer->printer_current_doc != NULL) {
+            /*if (current_printer->printer_current_doc != NULL) {
                 free(current_printer->printer_current_doc->doc_title);
                 free(current_printer->printer_current_doc);
-            }
+            }*/
             // Free the printer itself
             free(current_printer);
             current_printer = next_printer;
@@ -217,4 +217,22 @@ void free_printer_list(PrinterList *printer_list) {
 
         free(printer_list);
     }
+}
+
+float print_document(Printer *printer, Document *doc) {
+    // Check if the printer is busy
+    if (printer->printer_status == PRINTER_STATUS_BUSY || printer->printer_status == PRINTER_STATUS_OFFLINE) {
+        return -1;
+    }
+
+    // Print the document
+    printer->printer_current_doc = doc;
+    printer->printer_status = PRINTER_STATUS_BUSY;
+    printer->printer_current_doc->doc_num_lines_to_print = printer->printer_current_doc->doc_num_lines;
+
+    float time_for_print = (float)printer->printer_current_doc->doc_num_lines_to_print / (float)printer->printer_line_print_time;
+    sleep(time_for_print/(float)1000);
+    printer->printer_current_doc->doc_num_lines_to_print = 0;
+    printer->printer_status = PRINTER_STATUS_FREE;
+    return time_for_print; // in seconds
 }

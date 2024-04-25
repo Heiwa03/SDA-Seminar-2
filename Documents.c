@@ -141,3 +141,18 @@ char* _generate_random_string(int length) {
 
     return string;
 }
+
+Document* dequeue_document(DocumentQueue *doc_queue) {
+    if (doc_queue->head == NULL) {
+        return NULL;
+    }
+
+    Document* doc = doc_queue->head;
+    doc_queue->head = doc->next_doc;
+    doc->next_doc = NULL;
+
+    doc_queue->num_docs_not_printed--;
+    doc_queue->num_docs_printed++;
+
+    return doc;
+}

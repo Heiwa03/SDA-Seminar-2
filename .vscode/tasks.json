@@ -8,6 +8,7 @@
                 "-fdiagnostics-color=always",
                 "Printers.c",
                 "Documents.c",
+                "Simulation.c",
                 "-g",
                 "${file}",
                 "-o",

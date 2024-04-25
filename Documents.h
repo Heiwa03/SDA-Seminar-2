@@ -29,6 +29,7 @@ DocumentQueue* create_random_document_queue(int max_docs, int max_lines, int max
 void free_document_queue(DocumentQueue *doc_queue);
 // DEBUG: Document specific functions
 void show_document_queue(DocumentQueue *doc_queue);
+Document *dequeue_document(DocumentQueue *doc_queue);
 
 // Helper document functions
 char* _generate_random_string(int length);

@@ -6,6 +6,7 @@
 #include <math.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h>
 #include "Documents.h"
 
 enum PrinterStatus {
@@ -32,12 +33,14 @@ typedef struct PrinterList {
 
 // Printer specific functions
 PrinterList *create_printer_list();
-//Printer *create_printer(int printer_id, tm printer_line_print_time);
 Printer *create_printer(int printer_id, unsigned int printer_line_print_time);
 void add_printer(PrinterList *printer_list, Printer *printer);
 PrinterList* create_random_printer_list(int num_printers);
 void free_printer_list(PrinterList *printer_list);
 // DEBUG: Printer specific functions
 void show_printer_list(PrinterList *printer_list);
+
+// Returns the time it took to print the document or -1 if the printer is unavailable
+float print_document(Printer *printer, Document *doc);
 
 #endif // PRINTERS_H
