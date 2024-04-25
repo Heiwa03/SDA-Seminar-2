@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 #include "Documents.h"
 
 enum PrinterStatus {
@@ -40,5 +41,7 @@ void show_printer_list(PrinterList *printer_list);
 
 // Returns the time it took to print the document or -1 if the printer is unavailable
 float print_document(Printer *printer, Document *doc);
+
+Printer* find_fastest_printer(PrinterList* printer_list);
 
 #endif // PRINTERS_H

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <pthread.h>
 #include "Printers.h"
 #include "Documents.h"
@@ -12,6 +13,7 @@ typedef struct Simulation {
     DocumentQueue *doc_queue;
     int total_num_docs_printed;
     float total_time_elapsed;
+    double real_time_elapsed;
     pthread_mutex_t mutex;  // Add this line
 } Simulation;
 

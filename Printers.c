@@ -231,8 +231,24 @@ float print_document(Printer *printer, Document *doc) {
     printer->printer_current_doc->doc_num_lines_to_print = printer->printer_current_doc->doc_num_lines;
 
     float time_for_print = (float)printer->printer_current_doc->doc_num_lines_to_print / (float)printer->printer_line_print_time;
-    sleep(time_for_print/(float)1000);
+    sleep((float)time_for_print/1000);
     printer->printer_current_doc->doc_num_lines_to_print = 0;
     printer->printer_status = PRINTER_STATUS_FREE;
     return time_for_print; // in seconds
+}
+
+Printer* find_fastest_printer(PrinterList* printer_list) {
+    Printer* fastest_printer = NULL;
+    int min_print_time = INT_MAX;
+
+    Printer* current_printer = printer_list->head;
+    while (current_printer != NULL && current_printer->printer_status == PRINTER_STATUS_FREE) {
+        if (current_printer->printer_line_print_time < min_print_time) {
+            min_print_time = current_printer->printer_line_print_time;
+            fastest_printer = current_printer;
+        }
+        current_printer = current_printer->next_printer;
+    }
+
+    return fastest_printer;
 }

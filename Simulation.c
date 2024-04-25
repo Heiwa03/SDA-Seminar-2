@@ -68,11 +68,13 @@ void* printer_thread(void* arg) {
 }
 
 void run_simulation(Simulation *sim) {
+    struct timespec start, finish;
+    double real_time;
     if (sim == NULL) {
         fprintf(stderr, "Error: Simulation is NULL\n");
         return;
     }
-
+    clock_gettime(CLOCK_REALTIME, &start);
     pthread_mutex_init(&sim->mutex, NULL);
 
     Printer* printer = sim->printer_list->head;
@@ -91,10 +93,15 @@ void run_simulation(Simulation *sim) {
     for (i = 0; i < sim->printer_list->num_printers; i++) {
         pthread_join(printer_threads[i], NULL);
     }
+    
 
     free(printer_threads);
     pthread_mutex_destroy(&sim->mutex);
-
+    clock_gettime(CLOCK_REALTIME, &finish);
+    real_time = (finish.tv_sec - start.tv_sec);
+    real_time += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    //real_time *= 1000;
+    sim->real_time_elapsed = real_time;
     _print_simulation_results(sim);
 }
 
@@ -108,6 +115,7 @@ void _print_simulation_results(Simulation *sim) {
     printf("====================================\n");
     printf("Total number of printers: %d\n", sim->printer_list->num_printers);
     printf("Total number of documents printed: %d\n", sim->total_num_docs_printed);
-    printf("Total time elapsed: %.3f seconds\n", sim->total_time_elapsed);
+    printf("Total active printing time: %.3f seconds\n", sim->total_time_elapsed);
+    printf("Total real time elapsed: %lf seconds\n", sim->real_time_elapsed);
     printf("====================================\n");
 }
